@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Briefing · Página de Vendas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C1A2E;
+    --ink-soft:rgba(28,26,46,.66);
+    --paper:#F2F1EC;
+    --surface:#FFFFFF;
+    --accent:#5B45E0;
+    --accent-press:#4a37c4;
+    --accent-soft:#ECE9FB;
+    --amber:#F2A93B;
+    --muted:#6E6A7C;
+    --line:#E4E0D7;
+    --line-strong:#D8D3C8;
+    --ok:#1f9d6b;
+    --radius:16px;
+    --shadow:0 1px 2px rgba(28,26,46,.04), 0 8px 30px rgba(28,26,46,.06);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 60% at 50% -10%, rgba(91,69,224,.10), transparent 60%);
+    background-repeat:no-repeat;
+  }
+
+  /* ---- top progress rail ---- */
+  .rail{position:fixed;top:0;left:0;right:0;height:4px;background:transparent;z-index:50;}
+  .rail__fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#8b76ff);transition:width .35s ease;}
+
+  .wrap{max-width:740px;margin:0 auto;padding:0 20px 96px;}
+
+  /* ---- hero ---- */
+  .hero{padding:64px 0 8px;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 18px;
+  }
+  .hero h1{
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
+    font-size:clamp(2.1rem,7vw,3.1rem);line-height:1.04;letter-spacing:-.02em;margin:0 0 18px;
+  }
+  .hero h1 .mark{
+    background:linear-gradient(180deg,transparent 62%, rgba(91,69,224,.22) 62%);
+    padding:0 .06em;
+  }
+  .lead{font-size:1.05rem;color:var(--ink-soft);max-width:56ch;margin:0 0 8px;}
+  .lead strong{color:var(--ink);font-weight:600;}
+
+  /* ---- progress card ---- */
+  .meter{
+    display:flex;align-items:center;gap:16px;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;margin:28px 0 8px;box-shadow:var(--shadow);
+  }
+  .meter__ring{flex:0 0 auto;}
+  .meter__txt{flex:1;min-width:0;}
+  .meter__count{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.05rem;}
+  .meter__count b{color:var(--accent);}
+  .meter__bar{height:8px;border-radius:99px;background:var(--accent-soft);overflow:hidden;margin-top:8px;}
+  .meter__barfill{height:100%;width:0;border-radius:99px;background:var(--accent);transition:width .35s ease;}
+  .meter__hint{font-size:.82rem;color:var(--muted);margin-top:6px;}
+
+  /* ---- sections ---- */
+  .section{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px 24px 8px;margin-top:22px;box-shadow:var(--shadow);position:relative;
+    transition:border-color .25s ease;
+  }
+  .section--done{border-color:#bfe9d3;}
+  .section__head{
+    display:flex;align-items:center;gap:12px;margin-bottom:6px;
+    padding-bottom:18px;border-bottom:1px dashed var(--line-strong);
+  }
+  .section__num{
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.8rem;color:var(--accent);
+    background:var(--accent-soft);border-radius:8px;padding:5px 9px;letter-spacing:.04em;flex:0 0 auto;
+  }
+  .section__emoji{font-size:1.15rem;line-height:1;}
+  .section__title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.28rem;letter-spacing:-.01em;margin:0;flex:1;}
+  .section__check{
+    flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:2px solid var(--line-strong);
+    display:grid;place-items:center;color:transparent;transition:all .25s ease;
+  }
+  .section__check svg{width:13px;height:13px;}
+  .section--done .section__check{background:var(--ok);border-color:var(--ok);color:#fff;}
+
+  /* ---- question ---- */
+  .q{padding:18px 0;border-bottom:1px solid #F0EEE8;}
+  .q:last-child{border-bottom:none;}
+  .q__label{display:flex;gap:10px;align-items:baseline;cursor:pointer;}
+  .q__n{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.85rem;color:var(--accent);flex:0 0 auto;min-width:24px;}
+  .q__text{font-weight:600;font-size:1.02rem;}
+  .q__hint{font-size:.84rem;color:var(--muted);margin:4px 0 0 34px;}
+  textarea{
+    display:block;width:100%;margin:12px 0 0;padding:12px 14px;
+    font-family:'Inter',sans-serif;font-size:1rem;color:var(--ink);line-height:1.55;
+    background:#FBFBF9;border:1.5px solid var(--line-strong);border-radius:12px;
+    resize:none;overflow:hidden;min-height:52px;transition:border-color .15s ease, background .15s ease, box-shadow .15s ease;
+  }
+  textarea::placeholder{color:#A9A4B5;}
+  textarea:hover{border-color:#c7c1b4;}
+  textarea:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px var(--accent-soft);}
+  textarea.filled{border-color:#bfe9d3;background:#fff;}
+
+  /* ---- finish ---- */
+  .finish{
+    margin-top:30px;background:var(--ink);color:#fff;border-radius:20px;padding:34px 28px;text-align:center;
+    background-image:radial-gradient(120% 80% at 50% 0%, rgba(91,69,224,.45), transparent 60%);
+  }
+  .finish h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.55rem;margin:0 0 8px;letter-spacing:-.01em;}
+  .finish p{color:rgba(255,255,255,.78);margin:0 auto 22px;max-width:46ch;font-size:.98rem;}
+  .finish .status{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.06em;color:#cdbfff;margin-bottom:20px;}
+  .btns{display:flex;flex-direction:column;gap:12px;max-width:420px;margin:0 auto;}
+  button{font-family:'Inter',sans-serif;cursor:pointer;border:none;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    padding:15px 22px;border-radius:13px;font-size:1.02rem;font-weight:600;width:100%;
+    transition:transform .08s ease, background .15s ease, opacity .15s ease;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn--primary{background:#fff;color:var(--ink);}
+  .btn--primary:hover{background:#f1f0fb;}
+  .btn--wa{background:#25D366;color:#06301c;}
+  .btn--wa:hover{background:#1fc35d;}
+  .btn--ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);font-weight:500;font-size:.92rem;padding:12px 18px;}
+  .btn--ghost:hover{background:rgba(255,255,255,.14);}
+  .btn svg{width:18px;height:18px;flex:0 0 auto;}
+
+  .footer{text-align:center;padding:34px 12px 0;color:var(--ink-soft);font-size:.95rem;}
+  .footer b{color:var(--ink);}
+
+  /* toast */
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);
+    background:var(--ink);color:#fff;padding:12px 20px;border-radius:99px;font-size:.9rem;font-weight:500;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:all .3s ease;z-index:60;
+    display:flex;align-items:center;gap:8px;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0);}
+  .toast svg{width:16px;height:16px;color:#7CF0AE;}
+
+  @media (max-width:540px){
+    .hero{padding:44px 0 4px;}
+    .section{padding:22px 18px 4px;}
+    .finish{padding:28px 20px;}
+    .q__hint{margin-left:0;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;scroll-behavior:auto!important;}
+  }
+</style>
+</head>
+<body>
+  <div class="rail"><div class="rail__fill" id="rail"></div></div>
+
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Briefing · Página de vendas</p>
+      <h1>Vamos criar a sua <span class="mark">página de vendas</span> 👋</h1>
+      <p class="lead">Para montar uma página estratégica e alinhada ao seu produto, preciso conhecer alguns detalhes. <strong>Quanto mais você contar, melhor fica o resultado.</strong> É rápido: vá preenchendo os campos e, no final, toque em copiar e me envie pelo WhatsApp.</p>
+
+      <div class="meter" aria-hidden="false">
+        <div class="meter__txt">
+          <div class="meter__count"><b id="done">0</b> de 30 perguntas respondidas</div>
+          <div class="meter__bar"><div class="meter__barfill" id="bar"></div></div>
+          <div class="meter__hint" id="meterHint">Você pode escrever à vontade, com suas próprias palavras.</div>
+        </div>
+      </div>
+    </header>
+
+    <main id="form"></main>
+
+    <section class="finish">
+      <div class="status" id="finishStatus">0 / 30 respondidas</div>
+      <h2>Tudo pronto? 🚀</h2>
+      <p>Toque no botão abaixo para copiar todas as suas respostas e me enviar pelo WhatsApp. Eu cuido do resto.</p>
+      <div class="btns">
+        <button class="btn btn--wa" id="btnWa">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.512 5.26l-.999 3.648 3.476-.907zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>
+          Copiar respostas e enviar no WhatsApp
+        </button>
+        <button class="btn btn--ghost" id="btnCopy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Só copiar o texto
+        </button>
+        <button class="btn btn--ghost" id="btnTxt">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+          Baixar como arquivo (.txt)
+        </button>
+      </div>
+    </section>
+
+    <p class="footer">Obrigado pelo preenchimento! 🚀<br>Com essas respostas vou criar uma página de vendas <b>focada em conversão</b>, alinhada ao seu produto e ao seu público.</p>
+  </div>
+
+  <div class="toast" id="toast">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    <span id="toastMsg">Copiado!</span>
+  </div>
+
+<script>
+/* ======================================================================
+   CONFIGURAÇÃO — coloque aqui o seu número de WhatsApp (com DDI + DDD,
+   só números). Ex.: Brasil "5511999999999". Se deixar em branco, o
+   WhatsApp abrirá para o cliente escolher o seu contato manualmente.
+   ====================================================================== */
+const WHATSAPP_NUMERO = "";
+
+const SECTIONS = [
+  { n:"01", emoji:"📦", title:"Sobre o produto", q:[
+    {i:1,  t:"Qual é o nome do produto?"},
+    {i:2,  t:"O que exatamente é o produto?", h:"Explique de forma simples, como se contasse para um amigo."},
+    {i:3,  t:"Qual o valor do produto?", h:"Informe o preço e, se houver, as opções de parcelamento."},
+    {i:4,  t:"Qual é o link atual do checkout na Cakto?"},
+    {i:5,  t:"O produto é para iniciantes, intermediários ou avançados?"},
+  ]},
+  { n:"02", emoji:"🎯", title:"Sobre o público", q:[
+    {i:6,  t:"Quem é o público ideal para esse produto?", h:"Ex.: idade, gênero, profissão, momento de vida."},
+    {i:7,  t:"Qual é o principal problema que esse público enfrenta?"},
+    {i:8,  t:"O que eles mais desejam alcançar?"},
+    {i:9,  t:"O que normalmente impede essas pessoas de conseguirem resultados?", h:"Ex.: falta de tempo, dinheiro, conhecimento ou medo."},
+  ]},
+  { n:"03", emoji:"✨", title:"Transformação", q:[
+    {i:10, t:"O que a pessoa conquista após consumir seu produto?"},
+    {i:11, t:"Qual é a principal promessa ou transformação entregue?"},
+    {i:12, t:"Em quanto tempo o cliente costuma perceber resultados?"},
+  ]},
+  { n:"04", emoji:"🎁", title:"Conteúdo da oferta", q:[
+    {i:13, t:"O que o cliente recebe ao comprar?"},
+    {i:14, t:"Existem módulos, aulas ou etapas? Se sim, explique como funciona."},
+    {i:15, t:"Existem bônus? Quais?"},
+    {i:16, t:"Existe garantia? De quantos dias?"},
+    {i:17, t:"Existe suporte? Como funciona?"},
+  ]},
+  { n:"05", emoji:"⚡", title:"Diferenciais", q:[
+    {i:18, t:"O que faz seu produto ser diferente dos concorrentes?"},
+    {i:19, t:"Por que alguém deveria comprar de você e não de outro produtor?"},
+    {i:20, t:"Existe alguma metodologia exclusiva? Se sim, qual?"},
+  ]},
+  { n:"06", emoji:"💬", title:"Provas e credibilidade", q:[
+    {i:21, t:"Você possui depoimentos de clientes?"},
+    {i:22, t:"Possui prints de resultados?"},
+    {i:23, t:"Possui vídeos de alunos ou clientes?"},
+    {i:24, t:"Possui números ou estatísticas que comprovem resultados?"},
+  ]},
+  { n:"07", emoji:"🎨", title:"Visual da página", q:[
+    {i:25, t:"Você já possui logo?"},
+    {i:26, t:"Quais cores gostaria de utilizar na página?", h:"Se não souber, descreva um sentimento (ex.: “algo leve e elegante”)."},
+    {i:27, t:"Existe alguma página de vendas que você gosta como referência?"},
+    {i:28, t:"Pode enviar links de páginas que você considera bonitas ou eficientes?", h:"Se tiver, cole os links aqui."},
+  ]},
+  { n:"08", emoji:"🚀", title:"Objetivo da página", q:[
+    {i:29, t:"Qual é o principal objetivo da página?", h:"Ex.: vender direto, captar contato ou agendar uma conversa."},
+    {i:30, t:"Existe alguma informação importante que não foi perguntada e que você gostaria de adicionar?"},
+  ]},
+];
+
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+const STORE_KEY = "briefing_pagina_vendas_v1";
+
+/* ---------- render ---------- */
+const form = document.getElementById('form');
+SECTIONS.forEach(sec=>{
+  const s = document.createElement('section');
+  s.className = 'section';
+  s.dataset.sec = sec.n;
+  let qs = '';
+  sec.q.forEach(q=>{
+    qs += `
+      <div class="q">
+        <label class="q__label" for="q${q.i}">
+          <span class="q__n">${String(q.i).padStart(2,'0')}</span>
+          <span class="q__text">${q.t}</span>
+        </label>
+        ${q.h ? `<div class="q__hint">${q.h}</div>` : ``}
+        <textarea id="q${q.i}" data-q="${q.i}" rows="1" placeholder="Escreva aqui…"></textarea>
+      </div>`;
+  });
+  s.innerHTML = `
+    <div class="section__head">
+      <span class="section__num">${sec.n}</span>
+      <span class="section__emoji">${sec.emoji}</span>
+      <h3 class="section__title">${sec.title}</h3>
+      <span class="section__check">${CHECK}</span>
+    </div>
+    ${qs}`;
+  form.appendChild(s);
+});
+
+/* ---------- state + storage (defensivo) ---------- */
+const areas = [...document.querySelectorAll('textarea[data-q]')];
+
+function saveState(){
+  try{
+    const data = {};
+    areas.forEach(a=>{ if(a.value.trim()!=='') data[a.dataset.q]=a.value; });
+    localStorage.setItem(STORE_KEY, JSON.stringify(data));
+  }catch(e){/* armazenamento indisponível — segue em memória */}
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    areas.forEach(a=>{ if(data[a.dataset.q]) a.value = data[a.dataset.q]; });
+  }catch(e){/* ignora */}
+}
+
+function autosize(a){ a.style.height='auto'; a.style.height=(a.scrollHeight)+'px'; }
+
+function update(){
+  const total = areas.length;
+  const done = areas.filter(a=>a.value.trim()!=='').length;
+  const pct = Math.round((done/total)*100);
+
+  document.getElementById('done').textContent = done;
+  document.getElementById('bar').style.width = pct+'%';
+  document.getElementById('rail').style.width = pct+'%';
+  document.getElementById('finishStatus').textContent = `${done} / ${total} respondidas`;
+
+  const hint = document.getElementById('meterHint');
+  if(done===0) hint.textContent = 'Você pode escrever à vontade, com suas próprias palavras.';
+  else if(done<total) hint.textContent = `Faltam ${total-done} — continue, está ótimo!`;
+  else hint.textContent = 'Tudo respondido! É só enviar. 🎉';
+
+  areas.forEach(a=> a.classList.toggle('filled', a.value.trim()!==''));
+
+  document.querySelectorAll('.section').forEach(sec=>{
+    const qq = [...sec.querySelectorAll('textarea[data-q]')];
+    sec.classList.toggle('section--done', qq.length>0 && qq.every(a=>a.value.trim()!==''));
+  });
+}
+
+areas.forEach(a=>{
+  a.addEventListener('input', ()=>{ autosize(a); update(); saveState(); });
+});
+
+/* ---------- build export text ---------- */
+function buildText(){
+  let out = "BRIEFING · PÁGINA DE VENDAS\n";
+  out += "—————————————————————\n";
+  SECTIONS.forEach(sec=>{
+    out += `\n${sec.emoji} ${sec.title.toUpperCase()}\n`;
+    sec.q.forEach(q=>{
+      const v = (document.getElementById('q'+q.i).value || '').trim();
+      out += `${q.i}. ${q.t}\n`;
+      out += `R: ${v || '(em branco)'}\n\n`;
+    });
+  });
+  out += "—————————————————————\n";
+  out += "Enviado pelo formulário de briefing ✦";
+  return out.trim();
+}
+
+/* ---------- toast ---------- */
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* ---------- copy (com fallback) ---------- */
+async function copyText(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    return true;
+  }catch(e){
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    }catch(_){ return false; }
+  }
+}
+
+/* ---------- actions ---------- */
+document.getElementById('btnCopy').addEventListener('click', async ()=>{
+  const ok = await copyText(buildText());
+  toast(ok ? 'Respostas copiadas!' : 'Não consegui copiar — selecione e copie manualmente.');
+});
+
+document.getElementById('btnWa').addEventListener('click', async ()=>{
+  const text = buildText();
+  await copyText(text);
+  toast('Copiado! Abrindo o WhatsApp…');
+  const num = WHATSAPP_NUMERO.replace(/\D/g,'');
+  const url = num
+    ? `https://wa.me/${num}?text=${encodeURIComponent(text)}`
+    : `https://wa.me/?text=${encodeURIComponent(text)}`;
+  setTimeout(()=>window.open(url,'_blank'), 400);
+});
+
+document.getElementById('btnTxt').addEventListener('click', ()=>{
+  const blob = new Blob([buildText()], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'briefing-pagina-de-vendas.txt';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  toast('Arquivo baixado!');
+});
+
+/* ---------- init ---------- */
+loadState();
+areas.forEach(autosize);
+update();
+</script>
+</body>
+</html>
